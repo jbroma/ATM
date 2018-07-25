@@ -9,16 +9,13 @@
 #include "Processing.hpp"
 #include "../Component.h"
 #include "../Bank.h"
-#include "../ATM_MessagePort/ATM_MessagePort.hpp"
+#include "../MessagePort.h"
 
-namespace FSM
-{
-
-class Device : public Component
+class ATM_StateMachine : public Component
 {
 public:
 
-    Device(const Bank& bankConnection, const ATM_MessagePort& port ) : _bank(bankConnection), _port(port)
+    ATM_StateMachine(std::shared_ptr<Bank> bank, std::shared_ptr<Messenger> port ) : _bank(bank), _port(port)
     {
         createStatesMap();
         currentState = allStates[State::IDLE];
@@ -37,17 +34,13 @@ private:
             this->currentState = allStates[state];
         };
 
-        auto sharedName = std::make_shared<std::string>();
-
-        allStates[State::IDLE] = std::make_shared<Idle>(transition, sharedName);
-        allStates[State::VALIDATING] = std::make_shared<Validating>(transition, sharedName);
-        allStates[State::PROCESSING] = std::make_shared<Processing>(transition, sharedName);
+        allStates[State::IDLE] = std::make_shared<Idle>(transition, _bank, _port);
+        allStates[State::VALIDATING] = std::make_shared<Validating>(transition, _bank, _port);
+        allStates[State::PROCESSING] = std::make_shared<Processing>(transition, _bank, _port);
     }
 
     std::map<State, std::shared_ptr<DeviceState>> allStates;
     std::shared_ptr<DeviceState> currentState;
-    const Bank& _bank;
-    const ATM_MessagePort& _port;
+    std::shared_ptr<Bank> _bank;
+    std::shared_ptr<Messenger> _port;
 };
-
-}

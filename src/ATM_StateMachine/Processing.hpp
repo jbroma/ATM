@@ -3,31 +3,50 @@
 #include <string>
 #include <memory>
 
-namespace FSM
-{
-
 class Processing : public DeviceState
 {
 public:
     Processing(StateTransitionFunc stateTransitionFunc,
-          std::shared_ptr<std::string> sharedTaskName)
-        : DeviceState(stateTransitionFunc, sharedTaskName)
-
+        std::shared_ptr<Bank> bank,
+        std::shared_ptr<Messenger> port)
+        :DeviceState(stateTransitionFunc, bank, port)
     {}
 
     void runTask(const Message& msg) override
     {
+        MessageId new_message_type;
+        std::stringstream new_message_content;
         switch(msg.type) {
-            case MessageId::Withdraw: 
-            case MessageId::AccountBalance: 
-            case MessageId::CancelTransaction:
-                stateTransition(State::IDLE); break;
-            default: {
-                std::cout << "no state change" << std::endl;
+            case MessageId::Withdraw: {
+                if(_bankConnection->isWidthdrawAccepted(msg.content)) {
+                    new_message_type = MessageId::CardEjection;
+                    new_message_content << "Withdraw accepted";
+                }
+                else {
+                    new_message_type = MessageId::LackOfFounds;
+                    new_message_content << "Withdraw denied: Lack of Funds";
+                }
+                stateTransition(State::IDLE);
                 break;
             }
+            case MessageId::AccountBalance: {
+                new_message_type = MessageId::CardEjection;
+                new_message_content << "Your account balance is :" << _bankConnection->getAccountBalance();
+                stateTransition(State::IDLE);
+                break;
+            }
+            case MessageId::CancelTransaction: {
+                new_message_type = MessageId::CardEjection;
+                new_message_content << "Transaction cancelled";
+                stateTransition(State::IDLE);
+                break;
+            }
+                
+            default: {
+                new_message_content << "Wrong message of type: " << msg.type << " found inside IDLE state";
+                throw std::invalid_argument(new_message_content.str());
+            }
         }
+        _port->addMessage({new_message_type,new_message_content.str()});
     }
 };
-
-}

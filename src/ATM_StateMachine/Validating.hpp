@@ -2,15 +2,13 @@
 #include "State.hpp"
 #include <memory>
 
-namespace FSM
-{
-
 class Validating : public DeviceState
 {
 public:
-    Validating(StateTransitionFunc stateTansitionFunc,
-         std::shared_ptr<std::string> sharedTaskName)
-        :DeviceState(stateTansitionFunc, sharedTaskName)
+    Validating(StateTransitionFunc stateTransitionFunc,
+        std::shared_ptr<Bank> bank,
+        std::shared_ptr<Messenger> port)
+        :DeviceState(stateTransitionFunc, bank, port)
     {}
 
     void runTask(const Message& msg) override
@@ -18,7 +16,6 @@ public:
         switch(msg.type) {
             case MessageId::PinVerification: 
             {
-                
                 stateTransition(State::PROCESSING); 
                 break;
             }
@@ -33,5 +30,3 @@ public:
         }
     }
 };
-
-}

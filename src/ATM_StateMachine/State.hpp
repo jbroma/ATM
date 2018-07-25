@@ -4,10 +4,10 @@
 #include <iostream>
 #include <memory>
 #include <map>
+#include <sstream>
 #include "../Message.h"
-
-namespace FSM
-{
+#include "../Bank.h"
+#include "../MessagePort.h"
 
 enum State
 {
@@ -23,9 +23,11 @@ class DeviceState
 {
 public:
     DeviceState(StateTransitionFunc stateTransitionFunc,
-                std::shared_ptr<std::string> taskName)
-        : stateTransitionFunc(stateTransitionFunc),
-          taskName(taskName)
+                std::shared_ptr<Bank> bank,
+                std::shared_ptr<Messenger> port)
+        : _stateTransitionFunc(stateTransitionFunc),
+        _bankConnection(bank),
+        _port(port)
     {}
 
     virtual void runTask(const Message& msg) = 0;
@@ -33,16 +35,15 @@ public:
     virtual ~DeviceState() {}
 
 private:
-   StateTransitionFunc stateTransitionFunc;
+   StateTransitionFunc _stateTransitionFunc;
+   
 
 protected:
     void stateTransition(State newState)
     {
         //std::cout << "DEBUGLOG: state transition to:" << newState << "\n";
-        stateTransitionFunc(newState);
+        _stateTransitionFunc(newState);
     }
-    std::shared_ptr<std::string> taskName;
+    std::shared_ptr<Bank> _bankConnection;
+    std::shared_ptr<Messenger> _port;
 };
-
-}
-

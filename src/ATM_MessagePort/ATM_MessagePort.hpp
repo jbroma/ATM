@@ -4,9 +4,10 @@
 
 class ATM_MessagePort : public Messenger, public Observer {
     
-    void addMessage(const Message& message) override {
-        send(message);
-    };
+    public:
+    ATM_MessagePort() = default;
+    void addMessage(const Message& message) override;
+	std::vector<Message> collectMessages(const std::string& receiver);
 
     
 
