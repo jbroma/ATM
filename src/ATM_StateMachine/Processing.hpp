@@ -43,8 +43,7 @@ public:
             }
                 
             default: {
-                new_message_content << "Wrong message of type: " << msg.type << " found inside IDLE state";
-                throw std::invalid_argument(new_message_content.str());
+                //throw std::exception();
             }
         }
         _port->addMessage({new_message_type,new_message_content.str()});

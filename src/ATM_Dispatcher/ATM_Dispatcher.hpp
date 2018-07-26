@@ -7,13 +7,13 @@
 class ATM_Dispatcher : public Dispatcher {
 
     public:
-    ATM_Dispatcher(const Messenger& port);
+    ATM_Dispatcher(std::shared_ptr<MessagePort> port);
     void forwardMessage(const Message& msg) override;
     void registerComponent(std::set<MessageId> types, std::shared_ptr<Component> component) override;
     virtual ~ATM_Dispatcher() = default;
 
     private:
     
-    const Messenger& _port;
+    std::shared_ptr<MessagePort> _port;
     std::unique_ptr<Handler> next;
 };

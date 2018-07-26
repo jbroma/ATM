@@ -12,24 +12,25 @@ public:
 
     void runTask(const Message& msg) override
     {
-        switch(msg.type) {
-            case MessageId::CardInsertion: 
-            {
+        MessageId new_message_type;
+        std::stringstream new_message_content;
+        if(msg.type == MessageId::CardInsertion) {
                 if(_bankConnection->isCardActive(msg.content)) {
-                    std::cout << "card valid" << std::endl;
-                    stateTransition(State::VALIDATING); 
+                    new_message_content << msg.content << " : VALID";
+                    new_message_type = MessageId::PinVerification;
+                    stateTransition(State::VALIDATING);
                 }
-                else 
-                    std::cout << "card invalid" << std::endl;
-                // logg info that card is invalid
-                break;
-            }
-                
-            default: {
-                std::cout << "no state change" << std::endl;
-                //logg the unexepcted behaviour
-                break;
-            }
+                else {
+                    new_message_content << msg.content << " : INVALID";
+                    new_message_type = MessageId::CardBanned;
+                    _port->addMessage({new_message_type,new_message_content.str()});
+                    new_message_content.str(std::string{});
+                    new_message_content.clear();
+                    new_message_content << "Card Ejection";
+                    new_message_type = MessageId::CardEjection;
+                }
         }
+        //else throw std::exception();
+        _port->addMessage({new_message_type,new_message_content.str()});
     }
 };

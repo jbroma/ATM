@@ -7,11 +7,13 @@ enum MessageId
 {
     CardInsertion ,
     PinVerification,
+    PinVerified,
     Withdraw,
     AccountBalance,
     CancelTransaction,
     CardEjection,
     IncorrectPin,
+    CardValid,
     CardBanned,
     LackOfFounds,
 };

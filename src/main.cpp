@@ -20,29 +20,29 @@ int main()
     // device->handle({MessageId::CardInsertion, "wolololo"});
 
    //ATM FSM test
-   Message WrongCard(CardInsertion, "134");
-   Message CorrectCard(CardInsertion, "123456");
-   Message WrongPIN(PinVerification, "1111");
-   Message CorrectPIN(PinVerification, "9876");
-   Message Balance( AccountBalance, "sfdsf");
-   Message WrongWithdraw(Withdraw, "3000000");
-   Message CorrectWithdraw(Withdraw, "20");
+   Message WrongCard{CardInsertion, "134"};
+   Message CorrectCard{CardInsertion, "123456"};
+   Message WrongPIN{PinVerification, "1111"};
+   Message CorrectPIN{PinVerification, "9876"};
+   Message Balance{AccountBalance, "sfdsf"};
+   Message WrongWithdraw{Withdraw, "3000000"};
+   Message CorrectWithdraw{Withdraw, "20"};
    try {
-       atm.handle(WrongCard);
+       atm->handle(WrongCard);
    }
    catch(...){}
-   atm.handle(CorrectCard);
+   atm->handle(CorrectCard);
    try{
-       atm.handle(WrongPIN);
+       atm->handle(WrongPIN);
    }
    catch(...){}
-   atm.handle(CorrectPIN);
-   atm.handle(Balance);
-   atm.handle(CorrectCard);
-   atm.handle(CorrectPIN);
-   atm.handle(CorrectWithdraw);
-   atm.handle(CorrectCard);
-   atm.handle(CorrectPIN);
-   atm.handle(WrongWithdraw);
+   atm->handle(CorrectPIN);
+   atm->handle(Balance);
+   atm->handle(CorrectCard);
+   atm->handle(CorrectPIN);
+   atm->handle(CorrectWithdraw);
+   atm->handle(CorrectCard);
+   atm->handle(CorrectPIN);
+   atm->handle(WrongWithdraw);
     return 0;
 }

@@ -3,7 +3,7 @@
 ATM_Dispatcher::ATM_Dispatcher(const Messenger& port) : _port(port) {}
 
 void ATM_Dispatcher::forwardMessage(const Message& message) {
-    types
+    //types
 }
 
 void ATM_Dispatcher::registerComponent(std::set<MessageId> types, std::shared_ptr<Component> component) {

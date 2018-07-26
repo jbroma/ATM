@@ -13,20 +13,22 @@ public:
 
     void runTask(const Message& msg) override
     {
-        switch(msg.type) {
-            case MessageId::PinVerification: 
-            {
-                stateTransition(State::PROCESSING); 
-                break;
+        MessageId new_message_type;
+        std::stringstream new_message_content;
+        if(msg.type == MessageId::PinVerification) {
+            if(_bankConnection->isPinValid(msg.content)) {
+                new_message_type = MessageId::PinVerified;
+                new_message_content << "Pin verfied";
+                stateTransition(State::PROCESSING);
             }
-                
-            case MessageId::IncorrectPin: 
-            case MessageId::CardBanned: 
-                stateTransition(State::IDLE); break;
-            default: {
-                std::cout << "no action" << std::endl;
-                break;
+            else {
+                new_message_type = MessageId::IncorrectPin;
+                new_message_content << "Incorrect Pin";
+                stateTransition(State::IDLE);
             }
         }
+        //else throw std::exception();
+        
+        _port->addMessage({new_message_type,new_message_content.str()});
     }
 };
